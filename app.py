@@ -31,7 +31,7 @@ class LevelStats(Resource):
                 }
             )
 
-        return arr, 400
+        return arr, 200
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -50,7 +50,7 @@ class LevelStats(Resource):
             }
         )
 
-        return 400
+        return 200
 
 
 api.add_resource(LevelStats, '/level_scores')
