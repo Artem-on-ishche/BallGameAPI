@@ -1,11 +1,10 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
-from pymongo import MongoClient
+
+from db_connection import get_collection
 
 app = Flask(__name__)
 api = Api(app)
-
-CONNECTION_STRING = "mongodb+srv://BallGame:QUj6YfpigrOaCIAZ@ballgamecluster.tmiwe.mongodb.net/?retryWrites=true&w=majority"
 
 
 class LevelStats(Resource):
@@ -16,11 +15,8 @@ class LevelStats(Resource):
         parser.add_argument("player", required=True, type=str, location='args')
         args = parser.parse_args()
 
-        client = MongoClient(CONNECTION_STRING)
-        db = client.get_database("BallGame")
-
         level_name = args["level"]
-        collection = db[level_name]
+        collection = get_collection(level_name)
 
         player_name = args["player"]
         cursor = collection.find().sort("time") if player_name == "*" \
@@ -36,6 +32,25 @@ class LevelStats(Resource):
             )
 
         return arr, 400
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("level", required=True, type=str, location='args')
+        parser.add_argument("player", required=True, type=str, location='args')
+        parser.add_argument("time", required=True, type=float, location='args')
+        args = parser.parse_args()
+
+        level_name = args["level"]
+        collection = get_collection(level_name)
+
+        collection.insert_one(
+            {
+                "player": args["player"],
+                "time": args["time"]
+            }
+        )
+
+        return 400
 
 
 api.add_resource(LevelStats, '/level_scores')
