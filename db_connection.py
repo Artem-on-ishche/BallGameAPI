@@ -1,6 +1,10 @@
 from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
 
-CONNECTION_STRING = "mongodb+srv://BallGame:QUj6YfpigrOaCIAZ@ballgamecluster.tmiwe.mongodb.net/?retryWrites=true&w=majority"
+load_dotenv()
+
+CONNECTION_STRING = os.getenv("CONNECTION_STRING")
 
 
 def get_database():
